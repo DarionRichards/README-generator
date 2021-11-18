@@ -106,7 +106,10 @@ dist
 # Lock Files
 
 # DS_Store file
-.DS_Store
+.DS_Store/
 
-.package-lock.json
+# Lock files
+
 .vscode
+package-lock.json
+GENERATED_README.md
