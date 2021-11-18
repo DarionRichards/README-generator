@@ -1,14 +1,15 @@
-const fs = require('fs');
+const fs = require("fs");
+const inquirer = require("inquirer");
 
 // declare questions
 const questions = [];
 
 const generateTitle = (answers) => {
-  return `# TITLE ![MIT](https://img.shields.io/static/v1?label=MIT&message=License&color=green)`;
+    return `# TITLE ![MIT](https://img.shields.io/static/v1?label=MIT&message=License&color=green)`;
 };
 
 const generateTableOfContents = (answers) => {
-  return `## Table of Contents
+    return `## Table of Contents
   
   - [Description](#description)
   - [Installation](#installation)
@@ -19,13 +20,13 @@ const generateTableOfContents = (answers) => {
 };
 
 const generateDescription = (answers) => {
-  return `## Description
+    return `## Description
   
   ADD TEXT HERE`;
 };
 
 const generateInstallation = (answers) => {
-  return `## Installation
+    return `## Installation
   
   Run the following script to install the packages required for the application:
   
@@ -35,7 +36,7 @@ const generateInstallation = (answers) => {
 };
 
 const generateUsage = (answers) => {
-  return `## Usage
+    return `## Usage
   
   To use the application run the following script:
   
@@ -45,7 +46,7 @@ const generateUsage = (answers) => {
 };
 
 const generateTests = (answers) => {
-  return `## Tests
+    return `## Tests
   
   To use the application run the following script:
   
@@ -55,19 +56,19 @@ const generateTests = (answers) => {
 };
 
 const generateContributing = (answers) => {
-  return `## Contributing
+    return `## Contributing
   
   ADD TEXT HERE`;
 };
 
 const generateLicense = (answers) => {
-  return `## License
+    return `## License
   
   ADD TEXT HERE`;
 };
 
 const generateReadme = (answers) => {
-  return `${generateTitle(answers)}
+    return `${generateTitle(answers)}
 
   ${generateTableOfContents(answers)}
   
@@ -86,20 +87,20 @@ const generateReadme = (answers) => {
 };
 
 const writeToFile = (filePath, data) => {
-  try {
-    fs.writeFileSync(filePath, data);
-  } catch (error) {
-    console.log(error.message);
-  }
+    try {
+        fs.writeFileSync(filePath, data);
+    } catch (error) {
+        console.log(error.message);
+    }
 };
 
-const init = async () => {
-  // prompt the questions using inquirer
-  // generate readme based on answers
-  const readme = generateReadme();
+const init = async() => {
+    // prompt the questions using inquirer
+    // generate readme based on answers
+    const readme = generateReadme();
 
-  // write generated readme to a file
-  writeToFile('GENERATED_README.md', readme);
+    // write generated readme to a file
+    writeToFile("GENERATED_README.md", readme);
 };
 
 init();

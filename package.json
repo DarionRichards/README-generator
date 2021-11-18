@@ -16,5 +16,8 @@
     "bugs": {
         "url": "https://github.com/DarionRichards/README-generator/issues"
     },
-    "homepage": "https://github.com/DarionRichards/README-generator#readme"
+    "homepage": "https://github.com/DarionRichards/README-generator#readme",
+    "dependencies": {
+        "inquirer": "^8.2.0"
+    }
 }
