@@ -14,12 +14,12 @@ const questions = [{
     },
     {
         type: "confirm",
-        name: "checkInstallationScript",
+        name: "includeInstall",
         message: "Does your project need to be installed?",
     },
     {
         type: "confirm",
-        name: "userFlow",
+        name: "includeApplication",
         message: "Is your project an application?",
     },
     {
@@ -50,6 +50,42 @@ const questions = [{
         type: "input",
         name: "contribute",
         message: "How can other contribute to this app?",
+    },
+];
+
+const installationQuestions = [{
+        type: "input",
+        name: "installationStep",
+        message: "Please enter the steps for installation:",
+    },
+    {
+        type: "confirm",
+        name: "includeStep",
+        message: "Do you wish to enter another step?",
+    },
+];
+
+const userFlowQuestions = [{
+        type: "input",
+        name: "userFlow",
+        message: "Enter steps to use application:",
+    },
+    {
+        type: "confirm",
+        name: "includeStep",
+        message: "Do you wish to enter another step?",
+    },
+];
+
+const testQuestions = [{
+        type: "input",
+        name: "test",
+        message: "Enter steps to test application:",
+    },
+    {
+        type: "confirm",
+        name: "includeStep",
+        message: "Do you wish to enter another step?",
     },
 ];
 
@@ -143,10 +179,83 @@ const writeToFile = (filePath, data) => {
     }
 };
 
+const askInstallationQuestions = async() => {
+    // condition for while statement
+    let active = true;
+
+    // array to store installation steps
+    const installationArray = [];
+
+    while (active) {
+        // prompt the installation step questions to user
+        const installationAnswers = await inquirer.prompt(installationQuestions);
+        installationArray.push(installationAnswers.installationStep);
+        // condition to stop while loop
+        if (!installationAnswers.includeStep) {
+            active = false;
+        }
+    }
+
+    return installationArray;
+};
+
+const askApplicationQuestions = async() => {
+    const askUserFlowQuestions = async() => {
+        // condition for while statement
+        let active = true;
+
+        // array to store installation steps
+        const userFlowArray = [];
+
+        while (active) {
+            // prompt the installation step questions to user
+            const userFlowAnswers = await inquirer.prompt(userFlowQuestions);
+            userFlowArray.push(userFlowAnswers);
+            // condition to stop while loop
+            if (!userFlowAnswers.includeStep) {
+                active = false;
+            }
+        }
+
+        return userFlowArray;
+    };
+    const askTestQuestions = async() => {
+        // condition for while statement
+        let active = true;
+
+        // array to store installation steps
+        const testArray = [];
+
+        while (active) {
+            // prompt the installation step questions to user
+            const testAnswers = await inquirer.prompt(testQuestions);
+            testArray.push(testAnswers);
+            // condition to stop while loop
+            if (!testAnswers.includeStep) {
+                active = false;
+            }
+        }
+
+        return testArray;
+    };
+    await askUserFlowQuestions();
+    await askTestQuestions();
+};
+
 const start = async() => {
-    // prompt the questions using inquirer
+    // store answers from questions
     const answers = await inquirer.prompt(questions);
-    console.log(answers);
+
+    // if includeInstall === true
+    if (answers.includeInstall) {
+        await askInstallationQuestions();
+    }
+
+    // if includeApplication === true
+    if (answers.includeApplication) {
+        await askApplicationQuestions();
+    }
+
     // generate readme based on answers
     const readme = generateReadme();
 
