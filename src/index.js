@@ -2,7 +2,56 @@ const fs = require("fs");
 const inquirer = require("inquirer");
 
 // declare questions
-const questions = [];
+const questions = [{
+        type: "input",
+        name: "title",
+        message: "What is your project title?",
+    },
+    {
+        type: "input",
+        name: "description",
+        message: "What is your project description?",
+    },
+    {
+        type: "confirm",
+        name: "checkInstallationScript",
+        message: "Does your project need to be installed?",
+    },
+    {
+        type: "confirm",
+        name: "userFlow",
+        message: "Is your project an application?",
+    },
+    {
+        type: "list",
+        name: "license",
+        message: "Please choose the corresponding license for your project:",
+        choices: [{
+                name: "gitHub",
+                value: "gitHub",
+            },
+            {
+                name: "noLicense",
+                value: "noLicenseRequired",
+            },
+        ],
+    },
+    {
+        type: "input",
+        name: "gitUsername",
+        message: "What is your GitHub username?",
+    },
+    {
+        type: "input",
+        name: "email",
+        message: "What is your email?",
+    },
+    {
+        type: "input",
+        name: "contribute",
+        message: "How can other contribute to this app?",
+    },
+];
 
 const generateTitle = (answers) => {
     return `# TITLE ![MIT](https://img.shields.io/static/v1?label=MIT&message=License&color=green)`;
@@ -94,8 +143,10 @@ const writeToFile = (filePath, data) => {
     }
 };
 
-const init = async() => {
+const start = async() => {
     // prompt the questions using inquirer
+    const answers = await inquirer.prompt(questions);
+    console.log(answers);
     // generate readme based on answers
     const readme = generateReadme();
 
@@ -103,4 +154,4 @@ const init = async() => {
     writeToFile("GENERATED_README.md", readme);
 };
 
-init();
+start();
