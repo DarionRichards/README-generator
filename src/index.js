@@ -198,64 +198,99 @@ const generateTitle = (answers) => {
     return `# ${answers.title} ![${answers.license}](https://img.shields.io/static/v1?label=${answers.license}&message=License&color=green)`;
 };
 
-const generateTableOfContents = (
-    answers,
-    installationAnswers,
-    applicationAnswers
-) => `## Table of Contents
+const generateTableOfContents = (answers) => {
+    if (!answers.includeInstall && !answers.includeApplication) {
+        return `
+## Table of Contents
+        
+- [Description](#description)
+- [Contributing](#contributing)
+- [Contact Me](#contactme)`;
+    }
+    if (!answers.includeInstall && answers.includeApplication) {
+        return `
+## Table of Contents
+        
+- [Description](#description)
+- [Contributing](#contributing)
+- [Usage](#usage)
+- [Tests](#tests)
+- [Contact Me](#contactme)`;
+    }
+    if (answers.includeInstall && !answers.includeApplication) {
+        return `
+## Table of Contents
+        
+- [Description](#description)
+- [Contributing](#contributing)
+- [Installation](#installation)
+- [Contact Me](#contactme)`;
+    }
+    if (answers.includeInstall && answers.includeApplication) {
+        return `
+## Table of Contents
         
 - [Description](#description)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Tests](#tests)
 - [Contributing](#contributing)
-- [License](#license)`;
+- [Contact Me](#contactme)`;
+    }
+};
 
-const generateDescription = (answers) => `## Description
+const generateDescription = (answers) => `
+
+## Description
   
-  ${answers.description}`;
+${answers.description}`;
 
 const generateInstallation = (installationAnswers) => {
     const steps = buildInstallationSection(installationAnswers);
-    return `## Installation
+    return `
+## Installation
   
-  Run the following script to install the packages required for the application:
+Run the following script to install the packages required for the application:
   
-  \`\`\`
-  ${steps}
-  \`\`\``;
+\`\`\`
+${steps}
+\`\`\``;
 };
 
 const generateUsage = (userFlowAnswers) => {
     const steps = buildUsageSection(userFlowAnswers);
-    return `## Usage
+    return `
+## Usage
   
-  To use the application run the following script:
+To use the application run the following script:
   
-  \`\`\`
-  ${steps}\n
-  \`\`\``;
+\`\`\`
+${steps}\n
+\`\`\``;
 };
 
 const generateTests = (testAnswers) => {
     const steps = buildTestSection(testAnswers);
-    return `## Tests
+    return `
+## Tests
   
-  To use the application run the following script:
+To use the application run the following script:
   
-  \`\`\`
-  ${steps}\n
-  \`\`\``;
+\`\`\`
+${steps}\n
+\`\`\``;
 };
 
-const generateContributing = (answers) => `## Contributing
-  
-  ${answers.contribute}`;
+const generateContributing = (answers) => `
+## Contributing
 
-const generateContactMe = (answers) => `## Contact me
+${answers.contribute}`;
 
-  ${answers.gitUsername}
-  ${answers.email}`;
+const generateContactMe = (answers) => `
+## Contact me
+
+${answers.gitUsername}
+${answers.email}`;
 
 const generateReadme = (
     answers,
