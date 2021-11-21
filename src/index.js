@@ -89,8 +89,23 @@ const testQuestions = [{
     },
 ];
 
+const buildInstallationSection = (installationSteps) => {
+    const steps = installationSteps.join("\n");
+    return steps;
+};
+
+const buildUsageSection = (array) => {
+    const steps = array.join(" \n");
+    return steps;
+};
+
+const buildTestSection = (array) => {
+    const steps = array.join("\n");
+    return steps;
+};
+
 const generateTitle = (answers) => {
-    return `# TITLE ![MIT](https://img.shields.io/static/v1?label=MIT&message=License&color=green)`;
+    return `# ${answers.title} ![MIT](https://img.shields.io/static/v1?label=MIT&message=License&color=green)`;
 };
 
 const generateTableOfContents = (
@@ -111,43 +126,46 @@ const generateTableOfContents = (
 const generateDescription = (answers) => {
     return `## Description
   
-  ADD TEXT HERE`;
+  ${answers.description}`;
 };
 
 const generateInstallation = (installationAnswers) => {
+    const steps = buildInstallationSection(installationAnswers);
     return `## Installation
   
   Run the following script to install the packages required for the application:
   
   \`\`\`
-  ADD TEXT HERE
+  ${steps}
   \`\`\``;
 };
 
-const generateUsage = (applicationAnswers) => {
+const generateUsage = (userFlowAnswers) => {
+    const steps = buildUsageSection(userFlowAnswers);
     return `## Usage
   
   To use the application run the following script:
   
   \`\`\`
-  ADD TEXT HERE
+  ${steps}\n
   \`\`\``;
 };
 
-const generateTests = (applicationAnswers) => {
+const generateTests = (testAnswers) => {
+    const steps = buildTestSection(testAnswers);
     return `## Tests
   
   To use the application run the following script:
   
   \`\`\`
-  ADD TEXT HERE
+  ${steps}\n
   \`\`\``;
 };
 
 const generateContributing = (answers) => {
     return `## Contributing
   
-  ADD TEXT HERE`;
+  ${answers.contribute}`;
 };
 
 const generateLicense = (answers) => {
@@ -156,22 +174,41 @@ const generateLicense = (answers) => {
   ADD TEXT HERE`;
 };
 
-const generateReadme = (answers, installationAnswers, applicationAnswers) => {
+const generateContactMe = (answers) => {
+    return `## Contact me
+
+  ${answers.gitUsername}
+  ${answers.email}`;
+};
+
+const generateReadme = (
+    answers,
+    installationAnswers,
+    userFlowAnswers,
+    testAnswers
+) => {
     return `${generateTitle(answers)}
 
-  ${generateTableOfContents(answers, installationAnswers, applicationAnswers)}
+  ${generateTableOfContents(
+		answers,
+		installationAnswers,
+		userFlowAnswers,
+		testAnswers
+	)}
   
   ${generateDescription(answers)}
   
   ${generateInstallation(installationAnswers)}
   
-  ${generateUsage(applicationAnswers)}
+  ${generateUsage(userFlowAnswers)}
   
-  ${generateTests(applicationAnswers)}
+  ${generateTests(testAnswers)}
   
   ${generateContributing(answers)}
   
   ${generateLicense(answers)}
+
+  ${generateContactMe(answers)}
   `;
 };
 
@@ -203,52 +240,44 @@ const askInstallationQuestions = async() => {
     return installationArray;
 };
 
-const askApplicationQuestions = async() => {
-    const askUserFlowQuestions = async() => {
-        // condition for while statement
-        let active = true;
+const askUserFlowQuestions = async() => {
+    // condition for while statement
+    let active = true;
 
-        // array to store installation steps
-        const userFlowArray = [];
+    // array to store installation steps
+    const userFlowArray = [];
 
-        while (active) {
-            // prompt the installation step questions to user
-            const userFlowAnswers = await inquirer.prompt(userFlowQuestions);
-            userFlowArray.push(userFlowAnswers.userFlow);
-            // condition to stop while loop
-            if (!userFlowAnswers.includeStep) {
-                active = false;
-            }
+    while (active) {
+        // prompt the installation step questions to user
+        const userFlowAnswers = await inquirer.prompt(userFlowQuestions);
+        userFlowArray.push(userFlowAnswers.userFlow);
+        // condition to stop while loop
+        if (!userFlowAnswers.includeStep) {
+            active = false;
         }
+    }
 
-        return userFlowArray;
-    };
-    const askTestQuestions = async() => {
-        // condition for while statement
-        let active = true;
+    return userFlowArray;
+};
 
-        // array to store installation steps
-        const testArray = [];
+const askTestQuestions = async() => {
+    // condition for while statement
+    let active = true;
 
-        while (active) {
-            // prompt the installation step questions to user
-            const testAnswers = await inquirer.prompt(testQuestions);
-            testArray.push(testAnswers.test);
-            // condition to stop while loop
-            if (!testAnswers.includeStep) {
-                active = false;
-            }
+    // array to store installation steps
+    const testArray = [];
+
+    while (active) {
+        // prompt the installation step questions to user
+        const testAnswers = await inquirer.prompt(testQuestions);
+        testArray.push(testAnswers.test);
+        // condition to stop while loop
+        if (!testAnswers.includeStep) {
+            active = false;
         }
+    }
 
-        return testArray;
-    };
-    const userFlowAnswers = await askUserFlowQuestions();
-    const testAnswers = await askTestQuestions();
-
-    return {
-        userFlow: userFlowAnswers,
-        test: testAnswers,
-    };
+    return testArray;
 };
 
 const start = async() => {
@@ -257,7 +286,8 @@ const start = async() => {
 
     // array to store inatllation & application answers
     const installationArray = [];
-    const applicationArray = [];
+    const userFlowArray = [];
+    const testArray = [];
 
     // if includeInstall === true
     if (answers.includeInstall) {
@@ -267,12 +297,19 @@ const start = async() => {
 
     // if includeApplication === true
     if (answers.includeApplication) {
-        const applicationAnswers = await askApplicationQuestions();
-        applicationArray.push(applicationAnswers);
+        const userFlowAnswers = await askUserFlowQuestions();
+        const testAnswers = await askTestQuestions();
+        userFlowArray.push(userFlowAnswers);
+        testArray.push(testAnswers);
     }
 
     // generate readme based on answers
-    const readme = generateReadme(answers, installationArray, applicationArray);
+    const readme = generateReadme(
+        answers,
+        installationArray,
+        userFlowArray,
+        testArray
+    );
 
     // write generated readme to a file
     writeToFile("GENERATED_README.md", readme);
