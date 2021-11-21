@@ -89,6 +89,66 @@ const testQuestions = [{
     },
 ];
 
+const askInstallationQuestions = async() => {
+    // condition for while statement
+    let active = true;
+
+    // array to store installation steps
+    const installationArray = [];
+
+    while (active) {
+        // prompt the installation step questions to user
+        const installationAnswers = await inquirer.prompt(installationQuestions);
+        installationArray.push(installationAnswers.installationStep);
+        // condition to stop while loop
+        if (!installationAnswers.includeStep) {
+            active = false;
+        }
+    }
+
+    return installationArray;
+};
+
+const askUserFlowQuestions = async() => {
+    // condition for while statement
+    let active = true;
+
+    // array to store installation steps
+    const userFlowArray = [];
+
+    while (active) {
+        // prompt the installation step questions to user
+        const userFlowAnswers = await inquirer.prompt(userFlowQuestions);
+        userFlowArray.push(userFlowAnswers.userFlow);
+        // condition to stop while loop
+        if (!userFlowAnswers.includeStep) {
+            active = false;
+        }
+    }
+
+    return userFlowArray;
+};
+
+const askTestQuestions = async() => {
+    // condition for while statement
+    let active = true;
+
+    // array to store installation steps
+    const testArray = [];
+
+    while (active) {
+        // prompt the installation step questions to user
+        const testAnswers = await inquirer.prompt(testQuestions);
+        testArray.push(testAnswers.test);
+        // condition to stop while loop
+        if (!testAnswers.includeStep) {
+            active = false;
+        }
+    }
+
+    return testArray;
+};
+
 const buildInstallationSection = (installationSteps) => {
     const steps = installationSteps.join("\n");
     return steps;
@@ -102,6 +162,32 @@ const buildUsageSection = (array) => {
 const buildTestSection = (array) => {
     const steps = array.join("\n");
     return steps;
+};
+
+const buildSections = (
+    answers,
+    installationAnswers,
+    userFlowAnswers,
+    testAnswers
+) => {
+    if (!answers.includeInstall && !answers.includeApplication) {
+        return ``;
+    }
+    if (!answers.includeInstall && answers.includeApplication) {
+        return `${generateUsage(userFlowAnswers)}
+  
+    ${generateTests(testAnswers)}`;
+    }
+    if (answers.includeInstall && !answers.includeApplication) {
+        return `${generateInstallation(installationAnswers)}`;
+    }
+    if (answers.includeInstall && answers.includeApplication) {
+        return `${generateInstallation(installationAnswers)}
+  
+    ${generateUsage(userFlowAnswers)}
+  
+    ${generateTests(testAnswers)}`;
+    }
 };
 
 const generateTitle = (answers) => {
@@ -189,27 +275,22 @@ const generateReadme = (
 ) => {
     return `${generateTitle(answers)}
 
-  ${generateTableOfContents(
-		answers,
-		installationAnswers,
-		userFlowAnswers,
-		testAnswers
-	)}
+    ${generateTableOfContents(
+			answers,
+			installationAnswers,
+			userFlowAnswers,
+			testAnswers
+		)}
   
-  ${generateDescription(answers)}
+    ${generateDescription(answers)}
   
-  ${generateInstallation(installationAnswers)}
+    ${buildSections(answers, installationAnswers, userFlowAnswers, testAnswers)}
   
-  ${generateUsage(userFlowAnswers)}
+    ${generateContributing(answers)}
   
-  ${generateTests(testAnswers)}
-  
-  ${generateContributing(answers)}
-  
-  ${generateLicense(answers)}
+    ${generateLicense(answers)}
 
-  ${generateContactMe(answers)}
-  `;
+    ${generateContactMe(answers)}`;
 };
 
 const writeToFile = (filePath, data) => {
@@ -218,66 +299,6 @@ const writeToFile = (filePath, data) => {
     } catch (error) {
         console.log(error.message);
     }
-};
-
-const askInstallationQuestions = async() => {
-    // condition for while statement
-    let active = true;
-
-    // array to store installation steps
-    const installationArray = [];
-
-    while (active) {
-        // prompt the installation step questions to user
-        const installationAnswers = await inquirer.prompt(installationQuestions);
-        installationArray.push(installationAnswers.installationStep);
-        // condition to stop while loop
-        if (!installationAnswers.includeStep) {
-            active = false;
-        }
-    }
-
-    return installationArray;
-};
-
-const askUserFlowQuestions = async() => {
-    // condition for while statement
-    let active = true;
-
-    // array to store installation steps
-    const userFlowArray = [];
-
-    while (active) {
-        // prompt the installation step questions to user
-        const userFlowAnswers = await inquirer.prompt(userFlowQuestions);
-        userFlowArray.push(userFlowAnswers.userFlow);
-        // condition to stop while loop
-        if (!userFlowAnswers.includeStep) {
-            active = false;
-        }
-    }
-
-    return userFlowArray;
-};
-
-const askTestQuestions = async() => {
-    // condition for while statement
-    let active = true;
-
-    // array to store installation steps
-    const testArray = [];
-
-    while (active) {
-        // prompt the installation step questions to user
-        const testAnswers = await inquirer.prompt(testQuestions);
-        testArray.push(testAnswers.test);
-        // condition to stop while loop
-        if (!testAnswers.includeStep) {
-            active = false;
-        }
-    }
-
-    return testArray;
 };
 
 const start = async() => {
