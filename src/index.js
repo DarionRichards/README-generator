@@ -27,8 +27,12 @@ const questions = [{
         name: "license",
         message: "Please choose the corresponding license for your project:",
         choices: [{
+                name: "mit",
+                value: "MIT",
+            },
+            {
                 name: "gitHub",
-                value: "gitHub",
+                value: "GitHub",
             },
             {
                 name: "noLicense",
@@ -191,29 +195,25 @@ const buildSections = (
 };
 
 const generateTitle = (answers) => {
-    return `# ${answers.title} ![MIT](https://img.shields.io/static/v1?label=MIT&message=License&color=green)`;
+    return `# ${answers.title} ![${answers.license}](https://img.shields.io/static/v1?label=${answers.license}&message=License&color=green)`;
 };
 
 const generateTableOfContents = (
     answers,
     installationAnswers,
     applicationAnswers
-) => {
-    return `## Table of Contents
-  
-  - [Description](#description)
-  - [Installation](#installation)
-  - [Usage](#usage)
-  - [Tests](#tests)
-  - [Contributing](#contributing)
-  - [License](#license)`;
-};
+) => `## Table of Contents
+        
+- [Description](#description)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Tests](#tests)
+- [Contributing](#contributing)
+- [License](#license)`;
 
-const generateDescription = (answers) => {
-    return `## Description
+const generateDescription = (answers) => `## Description
   
   ${answers.description}`;
-};
 
 const generateInstallation = (installationAnswers) => {
     const steps = buildInstallationSection(installationAnswers);
@@ -248,32 +248,21 @@ const generateTests = (testAnswers) => {
   \`\`\``;
 };
 
-const generateContributing = (answers) => {
-    return `## Contributing
+const generateContributing = (answers) => `## Contributing
   
   ${answers.contribute}`;
-};
 
-const generateLicense = (answers) => {
-    return `## License
-  
-  ADD TEXT HERE`;
-};
-
-const generateContactMe = (answers) => {
-    return `## Contact me
+const generateContactMe = (answers) => `## Contact me
 
   ${answers.gitUsername}
   ${answers.email}`;
-};
 
 const generateReadme = (
     answers,
     installationAnswers,
     userFlowAnswers,
     testAnswers
-) => {
-    return `${generateTitle(answers)}
+) => `${generateTitle(answers)}
 
     ${generateTableOfContents(
 			answers,
@@ -287,11 +276,8 @@ const generateReadme = (
     ${buildSections(answers, installationAnswers, userFlowAnswers, testAnswers)}
   
     ${generateContributing(answers)}
-  
-    ${generateLicense(answers)}
 
     ${generateContactMe(answers)}`;
-};
 
 const writeToFile = (filePath, data) => {
     try {
