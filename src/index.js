@@ -198,7 +198,7 @@ ${contribute}`;
 const generateContactMe = ({gitUsername, email}) => `
 ## Contact me
 
-GitHub Username: ${gitUsername}
+GitHub Username: [GitHub](https://github.com/${gitUsername})
 Email Address: ${email}`;
 
 const generateReadme = (
