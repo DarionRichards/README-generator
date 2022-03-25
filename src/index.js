@@ -17,10 +17,13 @@ const askInstallationQuestions = async () => {
 
 	while (active) {
 		// prompt the installation step questions to user
-		const installationAnswers = await inquirer.prompt(installationQuestions);
-		installationArray.push(installationAnswers.installationStep);
+		const {installationStep, includeStep} = await inquirer.prompt(
+			installationQuestions
+		);
+
+		installationArray.push(installationStep);
 		// condition to stop while loop
-		if (!installationAnswers.includeStep) {
+		if (!includeStep) {
 			active = false;
 		}
 	}
@@ -37,10 +40,10 @@ const askUserFlowQuestions = async () => {
 
 	while (active) {
 		// prompt the installation step questions to user
-		const userFlowAnswers = await inquirer.prompt(userFlowQuestions);
-		userFlowArray.push(userFlowAnswers.userFlow);
+		const {userFlow, includeStep} = await inquirer.prompt(userFlowQuestions);
+		userFlowArray.push(userFlow);
 		// condition to stop while loop
-		if (!userFlowAnswers.includeStep) {
+		if (!includeStep) {
 			active = false;
 		}
 	}
@@ -57,10 +60,10 @@ const askTestQuestions = async () => {
 
 	while (active) {
 		// prompt the installation step questions to user
-		const testAnswers = await inquirer.prompt(testQuestions);
-		testArray.push(testAnswers.test);
+		const {test, includeStep} = await inquirer.prompt(testQuestions);
+		testArray.push(test);
 		// condition to stop while loop
-		if (!testAnswers.includeStep) {
+		if (!includeStep) {
 			active = false;
 		}
 	}
@@ -68,20 +71,11 @@ const askTestQuestions = async () => {
 	return testArray;
 };
 
-const buildInstallationSection = (installationSteps) => {
-	const steps = installationSteps.join("\n");
-	return steps;
-};
+const buildInstallationSection = (array) => array.join("\n");
 
-const buildUsageSection = (array) => {
-	const steps = array.join(" \n");
-	return steps;
-};
+const buildUsageSection = (array) => array.join(" \n");
 
-const buildTestSection = (array) => {
-	const steps = array.join("\n");
-	return steps;
-};
+const buildTestSection = (array) => array.join("\n");
 
 const buildSections = (
 	answers,
@@ -89,32 +83,32 @@ const buildSections = (
 	userFlowAnswers,
 	testAnswers
 ) => {
-	if (!answers.includeInstall && !answers.includeApplication) {
-		return ``;
-	}
-	if (!answers.includeInstall && answers.includeApplication) {
-		return `${generateUsage(userFlowAnswers)}
-  
-    ${generateTests(testAnswers)}`;
-	}
-	if (answers.includeInstall && !answers.includeApplication) {
-		return `${generateInstallation(installationAnswers)}`;
-	}
-	if (answers.includeInstall && answers.includeApplication) {
-		return `${generateInstallation(installationAnswers)}
-  
-    ${generateUsage(userFlowAnswers)}
-  
-    ${generateTests(testAnswers)}`;
-	}
+	// if (answers.includeInstall && answers.includeApplication) {
+	// 	return `${generateInstallation(installationAnswers)}
+
+	//     ${generateUsage(userFlowAnswers)}
+
+	//     ${generateTests(testAnswers)}`;
+	// }
+
+	const installation = answers.includeInstall
+		? `${generateInstallation(installationAnswers)}`
+		: "";
+
+	const application = answers.includeApplication
+		? `${generateUsage(userFlowAnswers)}
+        
+        ${generateTests(testAnswers)}`
+		: "";
+	return installation, application;
 };
 
-const generateTitle = (answers) => {
-	return `# ${answers.title} ![${answers.license}](https://img.shields.io/static/v1?label=${answers.license}&message=License&color=green)`;
+const generateTitle = ({title, license}) => {
+	return `# ${title} ![${license}](https://img.shields.io/static/v1?label=${license}&message=License&color=green)`;
 };
 
-const generateTableOfContents = (answers) => {
-	if (!answers.includeInstall && !answers.includeApplication) {
+const generateTableOfContents = ({includeInstall, includeApplication}) => {
+	if (!includeInstall && !includeApplication) {
 		return `
 ## Table of Contents
         
@@ -122,7 +116,7 @@ const generateTableOfContents = (answers) => {
 - [Contributing](#contributing)
 - [Contact Me](#contactme)`;
 	}
-	if (!answers.includeInstall && answers.includeApplication) {
+	if (!includeInstall && includeApplication) {
 		return `
 ## Table of Contents
         
@@ -132,7 +126,7 @@ const generateTableOfContents = (answers) => {
 - [Tests](#tests)
 - [Contact Me](#contactme)`;
 	}
-	if (answers.includeInstall && !answers.includeApplication) {
+	if (includeInstall && !includeApplication) {
 		return `
 ## Table of Contents
         
@@ -141,7 +135,7 @@ const generateTableOfContents = (answers) => {
 - [Installation](#installation)
 - [Contact Me](#contactme)`;
 	}
-	if (answers.includeInstall && answers.includeApplication) {
+	if (includeInstall && includeApplication) {
 		return `
 ## Table of Contents
         
@@ -154,11 +148,11 @@ const generateTableOfContents = (answers) => {
 	}
 };
 
-const generateDescription = (answers) => `
+const generateDescription = ({description}) => `
 
 ## Description
   
-${answers.description}`;
+${description}`;
 
 const generateInstallation = (installationAnswers) => {
 	const steps = buildInstallationSection(installationAnswers);
@@ -168,7 +162,7 @@ const generateInstallation = (installationAnswers) => {
 Run the following script to install the packages required for the application:
   
 \`\`\`
-${steps}
+${steps}\n
 \`\`\``;
 };
 
@@ -196,23 +190,24 @@ ${steps}\n
 \`\`\``;
 };
 
-const generateContributing = (answers) => `
+const generateContributing = ({contribute}) => `
 ## Contributing
 
-${answers.contribute}`;
+${contribute}`;
 
-const generateContactMe = (answers) => `
+const generateContactMe = ({gitUsername, email}) => `
 ## Contact me
 
-${answers.gitUsername}
-${answers.email}`;
+GitHub Username: ${gitUsername}
+Email Address: ${email}`;
 
 const generateReadme = (
 	answers,
 	installationAnswers,
 	userFlowAnswers,
 	testAnswers
-) => `${generateTitle(answers)}
+) => {
+	return `${generateTitle(answers)}
 
     ${generateTableOfContents(
 			answers,
@@ -228,6 +223,7 @@ const generateReadme = (
     ${generateContributing(answers)}
 
     ${generateContactMe(answers)}`;
+};
 
 const writeToFile = (filePath, data) => {
 	try {
@@ -249,15 +245,15 @@ const start = async () => {
 	// if includeInstall === true
 	if (answers.includeInstall) {
 		const installationAnswers = await askInstallationQuestions();
-		installationArray.push(installationAnswers);
+		installationArray.push(...installationAnswers);
 	}
 
 	// if includeApplication === true
 	if (answers.includeApplication) {
 		const userFlowAnswers = await askUserFlowQuestions();
 		const testAnswers = await askTestQuestions();
-		userFlowArray.push(userFlowAnswers);
-		testArray.push(testAnswers);
+		userFlowArray.push(...userFlowAnswers);
+		testArray.push(...testAnswers);
 	}
 
 	// generate readme based on answers
