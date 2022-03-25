@@ -209,12 +209,7 @@ const generateReadme = (
 ) => {
 	return `${generateTitle(answers)}
 
-    ${generateTableOfContents(
-			answers,
-			installationAnswers,
-			userFlowAnswers,
-			testAnswers
-		)}
+    ${generateTableOfContents(answers)}
   
     ${generateDescription(answers)}
   
